@@ -8,8 +8,8 @@ def main():
     session = mysqlx.get_session({
         "host": "localhost",
         "port": 33060,
-        "user": "root", # enter your username here
-        "password": "Th1sIsR00t" # enter your password here
+        "user": "USERNAME", # enter your username here
+        "password": "PASSWORD" # enter your password here
     })
 
     db_name = "myLibrary"
