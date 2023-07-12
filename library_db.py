@@ -8,8 +8,8 @@ def main():
     session = mysqlx.get_session({
         "host": "localhost",
         "port": 33060,
-        "user": "USERNAME", # enter your username here
-        "password": "PASSWORD" # enter your password here
+        "user": "root", # enter your username here
+        "password": "Th1sIsR00t" # enter your password here
     })
 
     db_name = "myLibrary"
@@ -43,7 +43,7 @@ def main():
                     print(f"Error: {db_err}")
                     raise
             break
-        
+
     while True:
         print("\n\nWhat would you like to do [0-11]?\n")
         print(" 1. Lend a book to a member\n" \
@@ -60,11 +60,11 @@ def main():
               " 0. Exit"
             )
         user_action = input(">>")
-        
+
         if user_action not in ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"):
             print("Invalid input")
             continue
-        
+
         elif user_action == "1":
             member = input("ID of member borrowing the book: ")
             book = input("ID of book being borrowed: ")
@@ -79,7 +79,7 @@ def main():
                 for row in result.fetch_all():
                     print(row)
             continue
-       
+
         elif user_action == "2":
             loan = input("ID of loan being finished: ")
             library = input("ID of library the book is returned to: ")
@@ -93,7 +93,7 @@ def main():
                 for row in result.fetch_all():
                     print(row)
             continue
-        
+
         elif user_action == "3":
             first_name = input("First name: ")
             last_name = input("Last name: ")
@@ -109,76 +109,76 @@ def main():
             else:
                 print("Member successfully added")
             continue
-        
+
         elif user_action == "4":
-                title = input("Title: ")
-                author = input("Author: ")
-                publisher = input("Publisher: ")
-                genre = input("Genre: ")
-                try:
-                    session.sql(f"INSERT INTO `Books` (title, author, publisher, genre) VALUES ({title}, {author}, {publisher}, {genre});").execute()
-                except lf.DatabaseError as db_err:
-                    print("Error: Book creation failed")
-                    print(db_err.msg)
-                else:
-                    print("Book successfully added")
-                continue
-        
+            title = input("Title: ")
+            author = input("Author: ")
+            publisher = input("Publisher: ")
+            genre = input("Genre: ")
+            try:
+                session.sql(f"INSERT INTO `Books` (title, author, publisher, genre) VALUES ({title}, {author}, {publisher}, {genre});").execute()
+            except lf.DatabaseError as db_err:
+                print("Error: Book creation failed")
+                print(db_err.msg)
+            else:
+                print("Book successfully added")
+            continue
+
         elif user_action == "5":
-                library = input("ID of library being added to: ")
-                book = input("ID of book being added: ")
-                nr = input("Number of copies being added: ")
-                try:
-                    session.sql(f"UPDATE LibBooks SET nrOfCopies = nrOfCopies + {int(nr)} WHERE libraryID = {library} AND bookID = {book};").execute()
-                except lf.DatabaseError as db_err:
-                    print("Error: Adding books failed")
-                    print(db_err.msg)
-                else:
-                    print("Book(s) successfully added")
-                continue
-        
+            library = input("ID of library being added to: ")
+            book = input("ID of book being added: ")
+            nr = input("Number of copies being added: ")
+            try:
+                session.sql(f"UPDATE LibBooks SET nrOfCopies = nrOfCopies + {int(nr)} WHERE libraryID = {library} AND bookID = {book};").execute()
+            except lf.DatabaseError as db_err:
+                print("Error: Adding books failed")
+                print(db_err.msg)
+            else:
+                print("Book(s) successfully added")
+            continue
+
         elif user_action == "6":
             print("Feature not yet implemented")
             continue
-        
+
         elif user_action == "7":
             member = input("Member ID: ")
             try:
                 query = f"SELECT M.firstName, M.lastName, COUNT(L.loanID), M.debt FROM Members M INNER JOIN Loans L ON M.memberID = L.memberID WHERE M.memberID = {member} AND L.returnedDate IS NULL GROUP BY M.firstName, M.lastName, M.debt;"
                 result = session.sql(query).execute()
             except lf.DatabaseError as db_err:
-                    print("Error: Member overview failed")
-                    print(db_err.msg)
+                print("Error: Member overview failed")
+                print(db_err.msg)
             else:
                 print("| {:<15} | {:<15} | {:<15} | {}".format("First name", "Last name", "Active loans", "Debt"))
                 print("-"*68)
                 for (firstName, lastName, loans, debt) in result.fetch_all():
                     print("| {:<15} | {:<15} | {:<15} | {}".format(firstName, lastName, loans, debt))
             continue
-        
+
         elif user_action == "8":
             member = input("Member ID: ")
             try:
                 query = f"SELECT B.bookID, B.title, L.dueDate FROM Members M INNER JOIN Loans L ON m.memberID = L.memberID INNER JOIN Books B ON B.bookID = L.bookID WHERE M.memberID = {member} AND L.returnedDate IS NULL;"
                 result = session.sql(query).execute()
             except lf.DatabaseError as db_err:
-                    print("Error: Member loans overview failed")
-                    print(db_err.msg)
+                print("Error: Member loans overview failed")
+                print(db_err.msg)
             else:
                 print("| {:<15} | {:<15} | {}".format("BookID", "Title", "Due date"))
                 print("-"*68)
                 for (bookID, title, dueDate) in result.fetch_all():
                     print("| {:<15} | {:<15} | {}".format(bookID, title, dueDate))
             continue
-        
+
         elif user_action == "9":
             library = input("Library ID: ")
             try:
                 query = f"SELECT B.bookID, B.title, L.nrOfCopies FROM Libraries INNER JOIN LibBooks L ON Libraries.libraryID = L.libraryID INNER JOIN Books B ON B.bookID = L.bookID WHERE Libraries.libraryID = {library} AND L.nrOfCopies > 0;"
                 result = session.sql(query).execute()
             except lf.DatabaseError as db_err:
-                    print("Error: Library overview failed")
-                    print(db_err.msg)
+                print("Error: Library overview failed")
+                print(db_err.msg)
             else:
                 print("| {:<15} | {:<15} | {}".format("BookID", "Title", "Copies"))
                 print("-"*68)
@@ -190,8 +190,8 @@ def main():
             try:
                 result = session.sql("SELECT memberID, firstname, lastName FROM Members;").execute()
             except lf.DatabaseError as db_err:
-                    print("Error: Viewing members failed")
-                    print(db_err.msg)
+                print("Error: Viewing members failed")
+                print(db_err.msg)
             else:
                 print("| {:<15} | {:<15} | {}".format("ID", "First name", "Last name"))
                 print("-"*68)
@@ -203,8 +203,8 @@ def main():
             try:
                 result = session.sql("SELECT bookID, title, author FROM Books;").execute()
             except lf.DatabaseError as db_err:
-                    print("Error: Viewing books failed")
-                    print(db_err.msg)
+                print("Error: Viewing books failed")
+                print(db_err.msg)
             else:
                 print("| {:<15} | {:<15} | {}".format("ID", "Title", "Author"))
                 print("-"*68)
