@@ -159,7 +159,7 @@ def main():
         elif user_action == "8":
             member = input("Member ID: ")
             try:
-                query = f"SELECT B.bookID, B.title, L.dueDate FROM Members M INNER JOIN Loans L ON m.memberID = L.memberID INNER JOIN Books B ON B.bookID = L.bookID WHERE M.memberID = {member} AND L.returnedDate IS NULL;"
+                query = f"SELECT  L.loanID, B.bookID, B.title, L.dueDate FROM Members M INNER JOIN Loans L ON m.memberID = L.memberID INNER JOIN Books B ON B.bookID = L.bookID WHERE M.memberID = {member} AND L.returnedDate IS NULL;"
                 result = session.sql(query).execute()
             except lf.DatabaseError as db_err:
                 print("Error: Member loans overview failed")
